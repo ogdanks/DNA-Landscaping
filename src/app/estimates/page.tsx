@@ -297,9 +297,9 @@ export default function EstimatesPage() {
           <div className="flex justify-between h-16">
             <div className="flex items-center gap-6">
               <Link href="/" className="text-xl font-bold text-green-600">Landscaping App</Link>
-              <Link href="/dashboard" className="text-gray-900 hover:text-gray-900">Dashboard</Link>
-              <Link href="/customers" className="text-gray-900 hover:text-gray-900">Customers</Link>
-              <Link href="/jobs" className="text-gray-900 hover:text-gray-900">Jobs</Link>
+              <Link href="/dashboard" className="text-gray-700 hover:text-gray-900">Dashboard</Link>
+              <Link href="/customers" className="text-gray-700 hover:text-gray-900">Customers</Link>
+              <Link href="/jobs" className="text-gray-700 hover:text-gray-900">Jobs</Link>
               <Link href="/estimates" className="text-green-600 font-medium">Estimates</Link>
             </div>
             <div className="flex items-center">
@@ -469,6 +469,7 @@ export default function EstimatesPage() {
 
                 {image && (
                   <div className="space-y-3">
+                    {/* eslint-disable-next-line @next/next/no-img-element -- runtime data URL from camera capture, not optimizable by next/image */}
                     <img src={image} alt="Taken photo" className="w-full rounded-lg" />
                     <button
                       type="button"

@@ -1,5 +1,7 @@
 'use client'
 
+import Link from 'next/link'
+
 export default function ServicesPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100">
@@ -7,9 +9,9 @@ export default function ServicesPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <span className="text-2xl font-bold text-green-600">🌿 Landscaping App</span>
-            <a href="/" className="px-4 py-2 text-green-600 hover:text-green-700 font-medium">
+            <Link href="/" className="px-4 py-2 text-green-600 hover:text-green-700 font-medium">
               Home
-            </a>
+            </Link>
           </div>
         </div>
       </nav>

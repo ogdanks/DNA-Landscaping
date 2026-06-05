@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import Square from "square";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    console.log("Payment request body:", body);
 
-    const { cardNumber, expiry, cvv, postalCode, amount, invoiceId, sandbox } = body;
+    const { cardNumber, amount, sandbox } = body;
 
     if (!cardNumber || !amount) {
       return NextResponse.json(
@@ -17,7 +15,6 @@ export async function POST(request: NextRequest) {
 
     // Sandbox mode - mock payment
     if (sandbox === true) {
-      console.log("Sandbox payment successful");
       return NextResponse.json({
         success: true,
         message: "Payment successful (sandbox)",
@@ -36,22 +33,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Initialize Square Payments API
-    const paymentsApi = new Square.PaymentsApi();
-
-    // Convert dollars to cents
-    const amountInCents = Math.round(amount * 100);
-
-    // In production, you would:
-    // 1. Use Square's Web Payments SDK on the frontend to tokenize the card
-    // 2. Send the nonce to this backend endpoint
-    // 3. Call Square's API with the nonce
-    
-    // For now, this is a placeholder - you need to integrate Square Web Payments SDK
+    // Production Square integration is not yet wired up. The full flow would:
+    // 1. Use Square's Web Payments SDK on the frontend to tokenize the card.
+    // 2. Send the resulting nonce to this endpoint.
+    // 3. Call the Square Payments API (paymentsApi.createPayment) with the nonce and amount.
     return NextResponse.json(
-      { 
-        success: false, 
-        error: "Square integration requires Web Payments SDK. See documentation at: https://developer.squareup.com/docs/web/payments-web" 
+      {
+        success: false,
+        error: "Square integration requires the Web Payments SDK. See https://developer.squareup.com/docs/web/payments-web",
       },
       { status: 501 }
     );

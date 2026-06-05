@@ -1,18 +1,12 @@
 import { NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
-import { PrismaPg } from '@prisma/adapter-pg'
-import { Pool } from 'pg'
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
-})
-
-const adapter = new PrismaPg(pool)
-const prisma = new PrismaClient({ adapter })
+import { prisma } from '@/lib/prisma'
 
 // Default user ID if not available
 const DEFAULT_USER_ID = process.env.DEFAULT_USER_ID || 'default-user-id'
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error)
+}
 
 export async function GET(request: Request) {
   try {
@@ -49,8 +43,8 @@ export async function POST(request: Request) {
       if (firstUser) {
         userId = firstUser.id
       }
-    } catch (e) {
-      console.log('Could not find user, using default')
+    } catch {
+      // No user found, fall back to DEFAULT_USER_ID
     }
     
     const estimate = await prisma.estimate.create({
@@ -68,7 +62,7 @@ export async function POST(request: Request) {
     return NextResponse.json(estimate)
   } catch (error) {
     console.error('Error creating estimate:', error)
-    return NextResponse.json({ error: 'Failed to create estimate', details: error.toString() }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to create estimate', details: errorMessage(error) }, { status: 500 })
   }
 }
 
@@ -97,7 +91,7 @@ export async function PUT(request: Request) {
     return NextResponse.json(estimate)
   } catch (error) {
     console.error('Error updating estimate:', error)
-    return NextResponse.json({ error: 'Failed to update estimate', details: error.toString() }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to update estimate', details: errorMessage(error) }, { status: 500 })
   }
 }
 

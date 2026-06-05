@@ -50,14 +50,6 @@ export default function DashboardPage() {
   const [recentInvoices, setRecentInvoices] = useState<Invoice[]>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login')
-    } else if (status === 'authenticated') {
-      fetchStats()
-    }
-  }, [status, router])
-
   async function fetchStats() {
     try {
       const [customersRes, jobsRes, estimatesRes, invoicesRes] = await Promise.all([
@@ -100,6 +92,15 @@ export default function DashboardPage() {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login')
+    } else if (status === 'authenticated') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      fetchStats()
+    }
+  }, [status, router])
 
   if (status === 'loading' || loading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>

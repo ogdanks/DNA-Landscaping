@@ -31,18 +31,6 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
   const router = useRouter()
   const [job, setJob] = useState<Job | null>(null)
   const [loading, setLoading] = useState(true)
-  const [id, setId] = useState('')
-
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login')
-    } else if (status === 'authenticated') {
-      params.then(p => {
-        setId(p.id)
-        fetchJob(p.id)
-      })
-    }
-  }, [status, router, params])
 
   async function fetchJob(jobId: string) {
     try {
@@ -55,6 +43,16 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login')
+    } else if (status === 'authenticated') {
+      params.then(p => {
+        fetchJob(p.id)
+      })
+    }
+  }, [status, router, params])
 
   function getStatusColor(status: string) {
     const colors: Record<string, string> = {
