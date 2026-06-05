@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  password      String?
+  image         String?
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  
+  role          String    @default("admin")
+  phone         String?
+  address       String?
+  
+  jobs          Job[]     @relation("CrewJobs")
+  estimates     Estimate[]
+}
+
+model Customer {
+  id          String   @id @default(cuid())
+  name        String
+  email       String   @unique
+  phone       String
+  address     String
+  city        String?
+  state       String?
+  zipCode     String?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  jobs        Job[]
+  estimates   Estimate[]
+  invoices    Invoice[]
+}
+
+model Job {
+  id            String    @default(cuid()) @id
+  title         String
+  description   String?
+  status        String    @default("pending")
+  scheduledDate DateTime?
+  completedDate DateTime?
+  price         Float?
+  notes         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  customerId    String
+  customer      Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  
+  crewId        String?
+  crew          User?     @relation("CrewJobs", fields: [crewId], references: [id], onDelete: SetNull)
+  
+  estimate      Estimate?
+  invoice       Invoice?
+}
+
+model Estimate {
+  id          String   @default(cuid()) @id
+  title       String
+  description String?
+  amount      Float
+  status      String   @default("pending")
+  validUntil  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  customerId    String
+  customer      Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  
+  jobId         String?     @unique
+  job           Job?        @relation(fields: [jobId], references: [id])
+  
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Invoice {
+  id          String   @default(cuid()) @id
+  invoiceNumber String  @unique
+  amount      Float
+  status      String    @default("pending")
+  dueDate     DateTime
+  paidDate    DateTime?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  customerId    String
+  customer      Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  
+  jobId         String?     @unique
+  job           Job?        @relation(fields: [jobId], references: [id])
+}
+
+model Account {
+  id                String  @default(cuid()) @id
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @default(cuid()) @id
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
