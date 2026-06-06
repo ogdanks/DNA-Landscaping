@@ -24,3 +24,51 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* === Input Readability Fix === */
+@layer base {
+  input,
+  textarea,
+  select,
+  button {
+    @apply text-gray-900 bg-white border border-gray-300 rounded-md;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    @apply text-gray-400;
+    opacity: 1;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    @apply outline-none ring-2 ring-indigo-500 border-indigo-500;
+  }
+
+  input:disabled,
+  textarea:disabled,
+  select:disabled,
+  button:disabled {
+    @apply opacity-60 cursor-not-allowed;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    input,
+    textarea,
+    select,
+    button {
+      @apply text-gray-100 bg-gray-800 border-gray-700;
+    }
+    input::placeholder,
+    textarea::placeholder {
+      @apply text-gray-400;
+    }
+    input:focus,
+    textarea:focus,
+    select:focus {
+      @apply ring-2 ring-indigo-400 border-indigo-400;
+    }
+  }
+}
+/* === End Fix === */
