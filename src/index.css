@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-dna-cream text-dna-char font-body;
+  }
+}
+
+.dna-card {
+  @apply bg-white rounded-2xl shadow-sm border border-dna-brown/20 p-5;
+}
+
+.btn-primary {
+  @apply bg-dna-forest text-white font-display font-semibold py-3 px-6 rounded-xl hover:bg-opacity-90 transition-all;
+}
