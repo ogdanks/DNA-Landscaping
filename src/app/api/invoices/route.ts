@@ -1,29 +1,20 @@
 import { NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
-import { PrismaPg } from '@prisma/adapter-pg'
-import { Pool } from 'pg'
+import { prisma } from '@/lib/prisma'
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
-})
-
-const adapter = new PrismaPg(pool)
-const prisma = new PrismaClient({ adapter })
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error)
+}
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
 
-    console.log('Fetching invoice with id:', id)
-
     if (id) {
       const invoice = await prisma.invoice.findUnique({
         where: { id },
         include: { customer: true, job: true }
       })
-      console.log('Found invoice:', invoice)
       return NextResponse.json(invoice || {})
     }
 
@@ -31,12 +22,11 @@ export async function GET(request: Request) {
       include: { customer: true, job: true },
       orderBy: { createdAt: 'desc' }
     })
-    console.log('Found invoices:', invoices.length)
     return NextResponse.json(invoices)
   } catch (error) {
     console.error('Error fetching invoices:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch invoices', details: error.toString() },
+      { error: 'Failed to fetch invoices', details: errorMessage(error) },
       { status: 500 }
     )
   }
@@ -45,9 +35,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    
-    console.log('Creating invoice with body:', body)
-    
+
     const invoiceNumber = body.invoiceNumber || `INV-${Date.now()}`
     
     const invoice = await prisma.invoice.create({
@@ -62,12 +50,11 @@ export async function POST(request: Request) {
       },
       include: { customer: true, job: true }
     })
-    console.log('Created invoice:', invoice)
     return NextResponse.json(invoice)
   } catch (error) {
     console.error('Error creating invoice:', error)
     return NextResponse.json(
-      { error: 'Failed to create invoice', details: error.toString() },
+      { error: 'Failed to create invoice', details: errorMessage(error) },
       { status: 500 }
     )
   }
@@ -101,7 +88,7 @@ export async function PUT(request: Request) {
   } catch (error) {
     console.error('Error updating invoice:', error)
     return NextResponse.json(
-      { error: 'Failed to update invoice', details: error.toString() },
+      { error: 'Failed to update invoice', details: errorMessage(error) },
       { status: 500 }
     )
   }

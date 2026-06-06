@@ -1,11 +1,9 @@
-'use client'
-
-import { SessionProvider } from 'next-auth/react'
+import AuthLayout from '@/components/auth-layout'
 
 export default function EstimatesLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  return <SessionProvider>{children}</SessionProvider>
+  return <AuthLayout>{children}</AuthLayout>
 }

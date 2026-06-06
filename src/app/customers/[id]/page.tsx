@@ -24,6 +24,7 @@ interface Job {
   price?: number
   scheduledDate?: string
   description?: string
+  customerId: string
   createdAt: string
 }
 
@@ -33,19 +34,6 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
   const [customer, setCustomer] = useState<Customer | null>(null)
   const [jobs, setJobs] = useState<Job[]>([])
   const [loading, setLoading] = useState(true)
-  const [id, setId] = useState('')
-
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login')
-    } else if (status === 'authenticated') {
-      params.then(p => {
-        setId(p.id)
-        fetchCustomer(p.id)
-        fetchJobs(p.id)
-      })
-    }
-  }, [status, router, params])
 
   async function fetchCustomer(customerId: string) {
     try {
@@ -69,6 +57,17 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login')
+    } else if (status === 'authenticated') {
+      params.then(p => {
+        fetchCustomer(p.id)
+        fetchJobs(p.id)
+      })
+    }
+  }, [status, router, params])
 
   function getStatusColor(status: string) {
     const colors: Record<string, string> = {

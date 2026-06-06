@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { format } from "date-fns";
 
@@ -29,7 +29,6 @@ interface Invoice {
 
 export default function InvoiceDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [loading, setLoading] = useState(true);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -49,12 +48,6 @@ export default function InvoiceDetailPage() {
   const companyPhone = "(555) 123-4567";
   const companyEmail = "info@greenscapes.com";
 
-  useEffect(() => {
-    if (params.id) {
-      fetchInvoice();
-    }
-  }, [params.id]);
-
   const fetchInvoice = async () => {
     try {
       const response = await fetch(`/api/invoices/${params.id}`);
@@ -66,6 +59,14 @@ export default function InvoiceDetailPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (params.id) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      fetchInvoice();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.id]);
 
   const handleEmailInvoice = async () => {
     if (!invoice || !invoice.customer?.email) {
@@ -102,7 +103,7 @@ export default function InvoiceDetailPage() {
         setError(data.error || "Failed to send email");
         setEmailLoading(false);
       }
-    } catch (err) {
+    } catch {
       setError("Failed to send email");
       setEmailLoading(false);
     }
@@ -146,7 +147,7 @@ export default function InvoiceDetailPage() {
       } else {
         setError(data.error || "Payment failed");
       }
-    } catch (err) {
+    } catch {
       setError("Payment failed. Please try again.");
     } finally {
       setPaymentLoading(false);

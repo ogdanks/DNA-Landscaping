@@ -14,6 +14,7 @@ interface Job {
   id: string
   title: string
   price?: number
+  customerId: string
 }
 
 interface Invoice {
@@ -80,7 +81,6 @@ export default function InvoicesPage() {
     try {
       const res = await fetch('/api/invoices')
       const data = await res.json()
-      console.log('Invoices data:', data)
       
       // Ensure data is an array
       if (Array.isArray(data)) {
@@ -155,7 +155,6 @@ export default function InvoicesPage() {
     }
 
     setPaymentProcessing(true)
-    console.log('Processing payment...')
 
     try {
       const paymentRes = await fetch('/api/payments', {
@@ -173,7 +172,6 @@ export default function InvoicesPage() {
       })
 
       const paymentData = await paymentRes.json()
-      console.log('Payment response:', paymentData)
 
       if (paymentRes.ok && paymentData.success) {
         await fetch(`/api/invoices?id=${selectingInvoice.id}`, {

@@ -1,18 +1,7 @@
 import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { PrismaClient } from '@prisma/client'
-import { PrismaPg } from '@prisma/adapter-pg'
-import { Pool } from 'pg'
 import bcrypt from 'bcryptjs'
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
-})
-
-const adapter = new PrismaPg(pool)
-
-const prisma = new PrismaClient({ adapter })
+import { prisma } from '@/lib/prisma'
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -43,8 +32,6 @@ export const authOptions: NextAuthOptions = {
         if (!isCorrectPassword) {
           throw new Error('Invalid credentials')
         }
-
-        await prisma.$disconnect()
 
         return {
           id: user.id,
